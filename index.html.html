@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ Кіберзахисник України</title>
+    <style>
+        * { 
+			margin: 0;
+			padding: 0; 
+			box-sizing: 
+			border-box;
+		}
+        body { 
+		    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  
+		    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+			min-height: 100vh; 
+			padding: 15px; color: #333; 
+		}
+        .container { 
+		max-width:700px;
+		margin: 0 auto; 
+		}
+        
+        #registration, #quest-app, .level, .card { 
+            background: white;
+			padding: 15px;
+			border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3); 
+			margin-bottom: 10px; 
+        }
+        
+        #quest-app { display: none; }
+        .level { display: none; }
+        .level.active { display: block; animation: fadeIn 0.5s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { 
+			color: #1e3c72; 
+			text-align: center;
+			margin-bottom: 10px;
+		}
+        h2 { 
+			color: #2a5298; 
+			margin-bottom: 15px; 
+			font-size:18px; 
+			border-bottom: 2px solid #eee;
+			padding-bottom: 8px;
+		}
+
+        .header { 
+			text-align: center; 
+			background: white; 
+			padding: 12px; 
+			border-radius: 15px; 
+			margin-bottom: 12px; 
+		}
+        .progress-container { 
+			background: #e0e0e0;
+			height: 8px; 
+			border-radius: 6px; 
+			overflow: hidden; 
+			margin: 10px 0; 
+		}
+        .progress-bar {
+			background: #4caf50; 
+			height: 100%; 
+			width: 0%; 
+			transition: width 0.4s ease; 
+		}
+        .score-info {
+			font-size: 16px; 
+			font-weight: bold; 
+			color: #1e3c72; 
+		}
+
+        .scenario { 
+			background: #f8faff; 
+			padding: 10px; 
+			border-radius: 10px;
+			margin: 10px 0; 
+			border-left: 5px solid #1e3c72; 
+			line-height: 1.4; 
+		}
+        .question { 
+			font-size: 14px;
+			font-weight: bold; 
+			margin: 10px 0; color: #444; 
+		}
+        
+        .options { list-style: none; }
+        .option { 
+            background: #f1f3f5;
+			padding: 10px;
+			margin: 6px 0;
+			border-radius: 10px; 
+            cursor: pointer;
+			transition: 0.2s;
+			border: 2px solid transparent; 
+			font-size: 14px;
+        }
+        .option:hover { 
+			background: #e9ecef;
+			border-color: #adb5bd;
+		}
+        .option.correct {
+			background: #d4edda !important;
+			border-color: #28a745 !important; 
+			color: #155724;
+		}
+        .option.wrong {
+			background: #f8d7da !important;
+			border-color: #dc3545 !important; 
+			color: #721c24;
+		}
+        .option.disabled { 
+			pointer-events: none;
+		}
+
+        .feedback { 
+			margin: 10px 0; 
+			padding: 10px;
+			border-radius: 10px;
+			display: none; 
+			font-weight: bold;
+			text-align: center; 
+		}
+        .feedback.show { 
+			display: block;
+		}
+        
+        .tip { 
+			background: #fff3cd;
+			padding: 10px;
+			border-radius: 10px; 
+			margin: 15px 0;
+			border-left: 5px solid #ffc107; 
+			font-size: 13px; 
+			display: none; 
+		}
+
+        .input-group { 
+			margin: 20px 0; 
+		}
+        label { 
+			display: block; 
+			margin-bottom: 8px; 
+			font-weight: bold; 
+		}
+        input, select { 
+			width: 100%; 
+			padding: 12px; 
+			border: 2px solid #ddd;
+			border-radius: 8px; 
+			font-size: 16px; 
+		}
+        
+        button { 
+            background: #1e3c72;
+			color: white;
+			border: none; 
+			padding: 12px 24px; 
+            border-radius: 10px; 
+			font-size: 16px; 
+			cursor: pointer;
+			width: 100%; 
+			transition: 0.3s; 
+        }
+        button:hover { 
+			background: #2a5298;
+		}
+        button:disabled {
+			background: #ccc; 
+			cursor: not-allowed;
+		}
+        
+        .final-score { 
+			font-size: 32px;
+			font-weight: bold;
+			margin: 20px 0; 
+			color: #4caf50; 
+		}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="registration">
+        <h1>🛡️ Кіберзахисник України</h1>
+        <div class="input-group">
+            <label>Твоє ім'я:</label>
+            <input type="text" id="userName" placeholder="Введіть ім'я">
+        </div>
+        <div class="input-group">
+            <label>Твій клас:</label>
+            <select id="userClass">
+                <option value="">Оберіть клас</option>
+                
+                <option value="9">9 клас</option>
+                <option value="10">10 клас</option>
+                <option value="11">11 клас</option>
+            </select>
+        </div>
+        <button onclick="startQuest()">🚀 Почати квест</button>
+    </div>
+
+    <div id="quest-app">
+        <div class="header">
+            <h1>🛡️ Кіберзахисник України</h1>
+            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+            <div class="score-info">Бали: <span id="currentScore">0</span> / 15</div>
+        </div>
+
+        <div class="level active" id="level1">
+            <h2>📧 Рівень 1: Розпізнай фішинг</h2>
+            <div class="scenario">
+                <p>Ти отримав листа на електронну пошту:</p>
+                <p style="font-style: italic; margin-top: 10px;">
+                    "Шановний користувач! Ваш акаунт буде заблоковано через 24 години. Натисніть тут: 
+                    <span style="color: blue; text-decoration: underline;">http://bank-ukrain.com/verify</span>"
+                </p>
+            </div>
+            <div class="question">Що ти маєш зробити?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 1, 'Фішинг')">Негайно перейти за посиланням</li>
+                <li class="option" onclick="handle(this, 'wrong', 1, 'Фішинг')">Переслати друзям</li>
+                <li class="option" onclick="handle(this, 'wrong', 1, 'Фішинг')">Ввести номер картки без пароля</li>
+				<li class="option" onclick="handle(this, 'correct', 1, 'Фішинг')">Видалити лист - це фішинг</li>
+            </ul>
+            <div class="feedback"></div>
+            <div class="tip"><strong>💡 Порада:</strong> Перевіряй адресу відправника. Справжній банк не просить пароль у листах.</div>
+            <button onclick="next(1)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level2">
+            <h2>🔐 Рівень 2: Створи надійний пароль</h2>
+            <div class="scenario"><p>Ти створюєш пароль для освітньої платформи.</p></div>
+            <div class="question">Який пароль найбезпечніший?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 2, 'Паролі')">12345678</li>
+                <li class="option" onclick="handle(this, 'wrong', 2, 'Паролі')">password</li>
+                <li class="option" onclick="handle(this, 'wrong', 2, 'Паролі')">ТвоєІм'я2009</li>
+                <li class="option" onclick="handle(this, 'correct', 2, 'Паролі')">K#8mPx!2wQ@9zL</li>
+            </ul>
+            <div class="feedback"></div>
+            <div class="tip"><strong>💡 Порада:</strong> Надійний пароль має містити мінімум 12 символів, 
+                великі та малі літери, цифри та спеціальні символи. Не використовуй особисту інформацію!</div>
+            <button onclick="next(2)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level3">
+            <h2>🎭 Рівень 3: Соціальна інженерія</h2>
+            <div class="scenario"><p>У месенджері тобі пише незнайома людина:</p>
+                <p style="font-style: italic; margin-top: 10px;">
+                    "Привіт! Я з підтримки Telegram. Нам потрібно підтвердити твій акаунт. 
+                    Надішли мені код, який прийде в СМС."
+                </p>
+            </div>
+            <div class="question">Твої дії?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 3, 'Соц.інженерія')">Надіслати код</li>
+                <li class="option" onclick="handle(this, 'wrong', 3, 'Соц.інженерія')">Запитати в друзів</li>
+                <li class="option" onclick="handle(this, 'wrong', 3, 'Соц.інженерія')">Надіслати і попередити</li>
+				<li class="option" onclick="handle(this, 'correct', 3, 'Соц.інженерія')">Ігнорувати та заблокувати</li>
+            </ul>
+            <div class="feedback"></div>
+			 <div class="tip"><strong>💡 Порада:</strong> Запам’ятай: код із SMS — це твій цифровий підпис. Справжня служба підтримки Telegram (або банку чи іншого сервісу) ніколи не запитує коди, паролі або PIN-коди в особистих повідомленнях. Якщо хтось просить код — це 100% шахрай.</div>
+            <button onclick="next(3)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level4">
+            <h2>📶 Рівень 4: Безпека в мережі</h2>
+            <div class="scenario"> <p>Ти в кафе і хочеш підключитися до безкоштовного Wi-Fi "FREE_WIFI_CAFE" 
+                без пароля, щоб зайти в онлайн-банкінг.</p></div>
+            <div class="question">Що безпечніше?</div>
+            <ul class="options">
+			    <li class="option" onclick="handle(this, 'correct', 4, 'Публічний Wi-Fi')">Використати мобільний інтернет для банківських операцій. Публічний Wi-Fi небезпечний</li>
+                <li class="option" onclick="handle(this, 'wrong', 4, 'Публічний Wi-Fi')">Підключитися до WiFi та зайти в банк - це зручно</li>
+                <li class="option" onclick="handle(this, 'wrong', 4, 'Публічний Wi-Fi')">Підключитися, але швидко зайти та вийти</li>
+                <li class="option" onclick="handle(this, 'wrong', 4, 'Публічний Wi-Fi')">Попросити пароль від Wi-Fi у перехожих</li>
+            </ul>
+            <div class="feedback"></div>
+			 <div class="tip">
+                <strong>⚠️ Увага:</strong> Незахищені публічні Wi-Fi мережі можуть використовуватися 
+                зловмисниками для перехоплення даних. Для важливих операцій використовуй мобільний інтернет або VPN.
+            </div>
+            <button onclick="next(4)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level5">
+            <h2>📰 Рівень 5: Перевір інформацію</h2>
+            <div class="scenario"><p>У месенджері бачиш повідомлення:</p> 
+			<p style="font-style: italic; margin-top: 10px;">
+                    "ТЕРМІНОВО! Сьогодні вночі відключать інтернет! Розішліть всім! 
+                    Підготуйтеся! Це пише мій знайомий з СБУ!"
+                </p></div>
+            <div class="question">Що робити з цією інформацією?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 5, 'Фейки')">Розіслати всім друзям негайно</li>
+                <li class="option" onclick="handle(this, 'wrong', 5, 'Фейки')">Опублікувати в соцмережах</li>
+                <li class="option" onclick="handle(this, 'correct', 5, 'Фейки')">Перевірити на офіційних джерелах (сайти держорганів, перевірені ЗМІ). Не поширювати непідтверджену інформацію</li>
+                <li class="option" onclick="handle(this, 'wrong', 5, 'Фейки')">Додати свій коментар і переслати</li>
+            </ul>
+            <div class="feedback"></div>
+			 <div class="tip">
+                <strong>🔍 Важливо:</strong> Завжди перевіряй інформацію на офіційних джерелах. 
+                Фейки та дезінформація - це частина гібридної війни.
+            </div>
+            <button onclick="next(5)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level6">
+            <h2>🔑 Рівень 6: Додатковий захист (2FA)</h2>
+            <div class="scenario"><p>Ти налаштував двофакторну автентифікацію (2FA) для своєї пошти. Хакер дізнався твій пароль.</p></div>
+            <div class="question">Чи зможе хакер увійти у твій акаунт?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 6, '2FA')">Так, якщо знає пароль, то 2FA не допоможе</li>
+                <li class="option" onclick="handle(this, 'correct', 6, '2FA')">Ні, для входу потрібен одноразовий код із твого телефону або додатка</li>
+                <li class="option" onclick="handle(this, 'wrong', 6, '2FA')">Тільки якщо він знаходиться у тій же країні</li>
+                <li class="option" onclick="handle(this, 'wrong', 6, '2FA')">Так, 2FA захищає лише від фішингу</li>
+            </ul>
+            <div class="feedback"></div>
+			<div class="tip">
+                <strong>🔒 2FA - це обов'язковий стандарт безпеки:</strong> Двофакторна автентифікація вимагає двох доказів ідентичності (пароль + код), що робить доступ без твого телефону майже неможливим.
+            </div>
+            <button onclick="next(6)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level7">
+            <h2>🔄 Рівень 7: Оновлення програмного забезпечення</h2>
+            <div class="scenario"><p>На твоєму комп'ютері постійно з'являється нагадування оновити операційну систему. Ти ігноруєш його вже тиждень, бо "немає часу".</p></div>
+            <div class="question">Чому оновлення ПЗ є критично важливими для безпеки??</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 7, 'Оновлення')">Вони потрібні лише для додавання нових кольорів інтерфейсу</li>
+                <li class="option" onclick="handle(this, 'wrong', 7, 'Оновлення')">Вони потрібні лише для того, щоб компанія збирала більше даних</li>
+                <li class="option" onclick="handle(this, 'correct', 7, 'Оновлення')">Оновлення закривають вразливості, які можуть використовувати хакери для злому</li>
+                <li class="option" onclick="handle(this, 'wrong', 7, 'Оновлення')">Це спосіб сповільнити старі комп'ютери</li>
+            </ul>
+            <div class="feedback"></div>
+			<div class="tip">
+                <strong>🚨 Не відкладай:</strong> Оновлення безпеки — це "щеплення" для твого пристрою від відомих кіберзагроз.
+            </div>
+            <button onclick="next(7)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level8">
+            <h2>🦠 Рівень 8: Шкідливе програмне забезпечення</h2>
+            <div class="scenario"><p>Ти завантажив "зламанну" гру з невідомого сайту. Тепер на твоєму робочому столі з'явилися незрозумілі файли, а комп'ютер дуже повільно працює.</p></div>
+            <div class="question">Що, ймовірно, трапилося?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 8, 'Віруси')">Просто "піратські" ігри завжди повільні</li>
+                <li class="option" onclick="handle(this, 'correct', 8, 'Віруси')">Ти завантажив шкідливе ПЗ (Malware), яке, можливо, краде твої дані або використовує твої ресурси (майнінг)</li>
+                <li class="option" onclick="handle(this, 'wrong', 8, 'Віруси')">Це просто вірус, який сам зникне</li>
+                <li class="option" onclick="handle(this, 'wrong', 8, 'Віруси')">Закінчилася пам'ять на диску</li>
+            </ul>
+            <div class="feedback"></div>
+			<div class="tip">
+                <strong>🚫 Джерело має значення:</strong> Завжди завантажуй програми та ігри лише з офіційних магазинів або перевірених джерел.
+            </div>
+            <button onclick="next(8)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level9">
+            <h2>📱 Рівень 9: Права доступу додатків</h2>
+            <div class="scenario"><p>Ти встановлюєш простий додаток-ліхтарик, який вимагає надати йому доступ до твоїх контактів, геолокації та мікрофона.</p></div>
+            <div class="question">Яким має бути твоє рішення?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 9, 'Дозволи')">Надати всі дозволи, оскільки інакше додаток не працюватиме</li>
+                <li class="option" onclick="handle(this, 'wrong', 9, 'Дозволи')">Надати доступ, але потім видалити його у налаштуваннях</li>
+                <li class="option" onclick="handle(this, 'wrong', 9, 'Дозволи')">Надати доступ лише до мікрофона</li>
+				<li class="option" onclick="handle(this, 'correct', 9, 'Дозволи')">Скасувати встановлення. Додаток-ліхтарик не потребує доступу до контактів чи мікрофона</li>
+            </ul>
+            <div class="feedback"></div>
+			<div class="tip">
+                <strong>👀 Будь уважний:</strong> Завжди перевіряй, які дозволи запитує додаток. Надмірні дозволи – ознака того, що програма може зловживати твоїми даними.
+            </div>
+            <button onclick="next(9)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level10">
+            <h2>💾 Рівень 10: Резервне копіювання</h2>
+            <div class="scenario"><p>На твоєму комп'ютері працює шифрувальник-вимагач (Ransomware), і всі твої важливі файли стали недоступними.</p></div>
+            <div class="question">Як ти можеш відновити свої дані без сплати викупу хакерам?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 10, 'Бекап')">Спробувати знайти ключ розшифрування в Інтернеті</li>
+                <li class="option" onclick="handle(this, 'correct', 10, 'Бекап')">Видалити вірус, а потім відновити файли з останньої резервної копії</li>
+                <li class="option" onclick="handle(this, 'wrong', 10, 'Бекап')">Чекати, доки хакери змилуються</li>
+                <li class="option" onclick="handle(this, 'wrong', 10, 'Бекап')">Сплатити невеликий викуп</li>
+            </ul>
+            <div class="feedback"></div>
+			<div class="tip">
+                <strong>🥇 Золоте правило:</strong> Резервні копії – єдиний 100% надійний захист від вірусів-шифрувальників та фізичних поломок обладнання.
+            </div>
+            <button onclick="next(10)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level11">
+            <h2>🔒 Рівень 11: Безпека веб-сайту</h2>
+            <div class="scenario"><p>Ти збираєшся ввести пароль на сайті, але бачиш, що в адресному рядку браузера поруч із назвою сайту стоїть значок відкритого замка або просто "HTTP"</p></div>
+            <div class="question">Чи безпечно вводити на цьому сайті конфіденційні дані?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 11, 'HTTPS')">Так, головне, щоб сайт виглядав добре</li>
+                <li class="option" onclick="handle(this, 'correct', 11, 'HTTPS')">Ні. Це незахищене HTTP-з'єднання. Дані передаються у відкритому вигляді, потрібен "HTTPS" (закритий замок)</li>
+                <li class="option" onclick="handle(this, 'wrong', 11, 'HTTPS')">Так, якщо це не публічний Wi-Fi</li>
+                <li class="option" onclick="handle(this, 'wrong', 11, 'HTTPS')">Тільки якщо сайт має лише 10 символів в адресі</li>
+            </ul>
+            <div class="feedback"></div>
+			 <div class="tip">
+                <strong>🔗 HTTPS - захист даних:</strong> Завжди шукай у браузері "зелений замок" та префікс "`https://`". Це означає, що твої дані шифруються.
+            </div>
+            <button onclick="next(11)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level12">
+            <h2>🔥 Рівень 12: Клікбейт та емоції</h2>
+            <div class="scenario"><p>Бачиш новину: "ШОК! УКРАЇНСЬКИМ ВІЙСЬКОВИМ СКАСУЮТЬ ВСІ ВИПЛАТИ!" Джерело — анонімний Telegram-канал.</p></div>
+            <div class="question">Яка головна ознака того, що це маніпуляція або фейк?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 12, 'Медіаграмотність')">Це опубліковано в Telegram</li>
+                <li class="option" onclick="handle(this, 'wrong', 12, 'Медіаграмотність')">Тільки "ШОК!" є ознакою фейку</li>
+                <li class="option" onclick="handle(this, 'wrong', 12, 'Медіаграмотність')">Новина має бути довшою</li>
+				 <li class="option" onclick="handle(this, 'correct', 12, 'Медіаграмотність')">Використання "великих літер", емоційних слів ("ШОК!") та "відсутність офіційного джерела"</li>
+            </ul>
+            <div class="feedback"></div>
+			<div class="tip">
+                <strong>🧠 Думай критично:</strong> Емоційний заголовок (клікбейт) часто використовується для того, щоб змусити тебе поширити новину до того, як ти перевіриш її правдивість.
+            </div>
+            <button onclick="next(12)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level13">
+            <h2>🏢 Рівень 13: Фізичний захист даних</h2>
+            <div class="scenario"><p>Ти відходиш на каву на 5 хвилин, а твій робочий комп'ютер у кабінеті залишається увімкненим, без блокування.</p></div>
+            <div class="question">Чому це є порушенням правил безпеки?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 13, 'Фізична безпека')">Це лише марнує електроенергію</li>
+                <li class="option" onclick="handle(this, 'correct', 13, 'Фізична безпека')">Будь-яка людина може отримати доступ до твоїх даних, поки тебе немає. Це порушення конфіденційності</li>
+                <li class="option" onclick="handle(this, 'wrong', 13, 'Фізична безпека')">Може сісти батарея</li>
+                <li class="option" onclick="handle(this, 'wrong', 13, 'Фізична безпека')">Це не порушення, якщо ти повернешся швидко</li>
+            </ul>
+            <div class="feedback"></div>
+			<div class="tip">
+                <strong>🔒 Блокуй екран:</strong> Завжди блокуй свій комп'ютер/ноутбук, коли відходиш (Windows: `Win + L`, macOS: `Cmd + Ctrl + Q`).
+            </div>
+            <button onclick="next(13)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level14">
+            <h2>📋 Рівень 14: Менеджер паролів</h2>
+            <div class="scenario"><p>Ти маєш 50 акаунтів і використовуєш один і той же пароль, бо не можеш їх запам'ятати.</p></div>
+            <div class="question">Яке найкраще рішення для управління великою кількістю складних унікальних паролів?</div>
+            <ul class="options">
+				<li class="option" onclick="handle(this, 'correct', 14, 'Паролі')">Використовувати перевірений "менеджер паролів" (наприклад, 1Password, Bitwarden, KeePass)</li>
+                <li class="option" onclick="handle(this, 'wrong', 14, 'Паролі')">Записати всі паролі у блокнот і зберігати під клавіатурою</li>
+                <li class="option" onclick="handle(this, 'wrong', 14, 'Паролі')">Використовувати паролі, які легко запам'ятати (наприклад, назва міста і рік народження)</li>
+                <li class="option" onclick="handle(this, 'wrong', 14, 'Паролі')">Просто користуватися одним і тим же паролем, але зробити його довшим</li>
+            </ul>
+            <div class="feedback"></div>
+			<div class="tip">
+                <strong>🧠 Пам'ять не потрібна:</strong> Менеджер паролів зберігає всі твої унікальні паролі за одним головним паролем, а також допомагає їх генерувати. Це найбезпечніший спосіб.
+            </div>
+            <button onclick="next(14)" disabled>Далі →</button>
+        </div>
+
+        <div class="level" id="level15">
+            <h2>👻 Рівень 15: Конфіденційність у мережі</h2>
+            <div class="scenario"><p>Ти не хочеш, щоб провайдер або зовнішні сервіси відстежували твою активність у мережі та бачили, які сайти ти відвідуєш.</p></div>
+            <div class="question">Який інструмент забезпечує шифрування трафіку та приховує твою справжню IP-адресу?</div>
+            <ul class="options">
+                <li class="option" onclick="handle(this, 'wrong', 15, 'VPN')">Антивірус</li>
+                <li class="option" onclick="handle(this, 'correct', 15, 'VPN')">"VPN" (Віртуальна приватна мережа)</li>
+                <li class="option" onclick="handle(this, 'wrong', 15, 'VPN')">Менеджер паролів</li>
+                <li class="option" onclick="handle(this, 'wrong', 15, 'VPN')">Просто режим "Інкогніто" у браузері</li>
+            </ul>
+            <div class="feedback"></div>
+			 <div class="tip">
+                <strong>🌐 Невидимість:</strong> VPN створює зашифрований тунель між тобою та Інтернетом, забезпечуючи конфіденційність та безпеку, особливо в публічних мережах.
+            </div>
+            <button id="finalBtn" onclick="finish()" disabled>Показати результати</button>
+        </div>
+
+        <div id="final-screen" class="card" style="display:none; text-align:center;">
+            <h1>🎉 Квест завершено!</h1>
+            <div class="final-score"><span id="finalScore">0</span> / 15</div>
+            <p id="status">Надсилаємо дані в таблицю...</p>
+        <div id="finalMessage"></div>
+
+        <h3 style="margin-top: 30px;">📚 Що ти дізнався:</h3>
+        <ul style="line-height: 1.6;">
+<li>✅ Фішинг та соціальна інженерія</li>
+<li>✅ Надійні паролі та 2FA</li>
+<li>✅ Безпека в мережі (Wi-Fi, VPN, HTTPS)</li>
+<li>✅ Оновлення та захист від вірусів</li>
+<li>✅ Перевірка інформації та медіаграмотність</li>
+</ul>
+
+	
+
+
+            <button onclick="location.reload()" style="margin-top: 20px;">🔄 Пройти ще раз</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhXPyNFfF3xwnxSlZ76duO1hPPuXGlY6IxcrW9XXIp7s-2UjpVQG6j20x5jPS9eNoD/exec"; 
+
+    let score = 0;
+    let userName = "";
+    let userClass = "";
+    let errors = [];
+
+    function startQuest() {
+        userName = document.getElementById('userName').value.trim();
+        userClass = document.getElementById('userClass').value;
+        if (!userName || !userClass) return alert("Заповніть ім'я та клас!");
+        document.getElementById('registration').style.display = 'none';
+        document.getElementById('quest-app').style.display = 'block';
+    }
+
+    function handle(el, type, lvl, topic) {
+        const parent = el.closest('.level');
+        const options = parent.querySelectorAll('.option');
+        const feedback = parent.querySelector('.feedback');
+        const tip = parent.querySelector('.tip');
+        const btn = parent.querySelector('button');
+
+        options.forEach(o => o.classList.add('disabled'));
+        
+        if (type === 'correct') {
+            el.classList.add('correct');
+            feedback.innerText = "✅ Вірно!";
+            feedback.style.color = "#28a745";
+            score++;
+        } else {
+            el.classList.add('wrong');
+            parent.querySelector('[onclick*="correct"]').classList.add('correct');
+            feedback.innerText = "❌ Помилка!";
+            feedback.style.color = "#dc3545";
+            errors.push(topic);
+        }
+
+        feedback.classList.add('show');
+        if (tip) tip.style.display = 'block';
+        btn.disabled = false;
+        
+        document.getElementById('currentScore').innerText = score;
+        document.getElementById('progressBar').style.width = (lvl / 15 * 100) + "%";
+    }
+
+    function next(current) {
+        document.getElementById('level' + current).classList.remove('active');
+        document.getElementById('level' + (current + 1)).classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    async function finish() {
+        document.getElementById('level15').classList.remove('active');
+        document.getElementById('final-screen').style.display = 'block';
+        document.getElementById('finalScore').innerText = score;
+
+        const data = {
+            name: userName,
+            userClass: userClass,
+            correct: score,
+            wrong: 15 - score,
+            errors: errors.length > 0 ? errors.join(", ") : "Немає"
+        };
+
+        try {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+            document.getElementById('status').innerText = "✅ Результати збережено в таблиці!";
+        } catch (e) {
+            document.getElementById('status').innerText = "❌ Помилка збереження. Зробіть скріншот результату.";
+        }
+		
+    }
+function showFinalResults() {
+    document.getElementById('final').classList.add('active');
+    document.getElementById('finalScore').textContent = score;
+
+    const messageDiv = document.getElementById('finalMessage');
+    let message = '';
+
+    if (score === 5) {
+        message = '<div style="background: #d4edda; padding: 20px; border-radius: 10px; text-align: center;">' +
+            '<h3 style="color: #28a745;">🏆 Відмінно!</h3>' +
+            '<p>Ти справжній експерт з кібербезпеки! Продовжуй так само!</p></div>';
+    } else if (score >= 3) {
+        message = '<div style="background: #fff3cd; padding: 20px; border-radius: 10px; text-align: center;">' +
+            '<h3 style="color: #856404;">👍 Добре!</h3>' +
+            '<p>У тебе є базові знання з кібербезпеки. Повтори матеріал, щоб покращити результат!</p></div>';
+    } else {
+        message = '<div style="background: #f8d7da; padding: 20px; border-radius: 10px; text-align: center;">' +
+            '<h3 style="color: #721c24;">📖 Потрібно попрацювати</h3>' +
+            '<p>Пройди квест ще раз та уважно прочитай поради. Кібербезпека - це важливо!</p></div>';
+    }
+
+    messageDiv.innerHTML = message;
+}
+
+for (let i = 1; i <= totalLevels; i++) {
+    setupLevel(i);
+}
+
+updateProgress();
+updateScore();	
+</script>
+</body>
+</html>
